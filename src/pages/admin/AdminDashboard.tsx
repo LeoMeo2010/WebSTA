@@ -9,26 +9,28 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    Promise.all([
-      supabase.from('exercises').select('id', { count: 'exact', head: true }),
-      supabase.from('submissions').select('id,status', { count: 'exact' }),
-    ]).then(([ex, sub]) => {
+    async function load() {
+      const [ex, sub] = await Promise.all([
+        supabase.from('exercises').select('id', { count: 'exact', head: true }),
+        supabase.from('submissions').select('id,status', { count: 'exact' }),
+      ])
       const subs = sub.data ?? []
       setStats({
         exercises: ex.count ?? 0,
         submissions: subs.length,
-        pending: subs.filter(s => s.status === 'pending').length,
-        graded: subs.filter(s => s.status === 'graded').length,
+        pending: subs.filter((s: any) => s.status === 'pending').length,
+        graded: subs.filter((s: any) => s.status === 'graded').length,
       })
-    })
 
-    supabase
-      .from('submissions')
-      .select('id, status, submitted_at, student:profiles(full_name), exercise:exercises(title)')
-      .order('submitted_at', { ascending: false })
-      .limit(5)
-      .then(({ data }) => setRecentSubmissions(data ?? []))
-      .finally(() => setLoading(false))
+      const { data } = await supabase
+        .from('submissions')
+        .select('id, status, submitted_at, student:profiles(full_name), exercise:exercises(title)')
+        .order('submitted_at', { ascending: false })
+        .limit(5)
+      setRecentSubmissions(data ?? [])
+      setLoading(false)
+    }
+    load()
   }, [])
 
   if (loading) return <Spinner />
