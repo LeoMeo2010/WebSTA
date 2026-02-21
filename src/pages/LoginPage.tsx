@@ -38,7 +38,7 @@ export default function LoginPage() {
             borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'JetBrains Mono', fontSize: '1.2rem', fontWeight: 700,
             color: 'white', margin: '0 auto 1rem'
-          }}>K</div>
+          }}>STA</div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '0.3rem' }}>Web STA</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Accedi alla piattaforma</p>
         </div>
