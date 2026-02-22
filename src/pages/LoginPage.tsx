@@ -54,10 +54,6 @@ export default function LoginPage() {
               {loading ? 'Accesso...' : 'Accedi'}
             </Btn>
           </form>
-          <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-            Non hai un account?{' '}
-            <Link to="/register" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }}>Registrati</Link>
-          </p>
         </div>
       </div>
     </div>
