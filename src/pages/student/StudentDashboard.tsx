@@ -69,6 +69,9 @@ export default function StudentDashboard() {
                       {sub ? '👁 Vedi' : '✏️ Svolgi'}
                     </Btn>
                   </Link>
+                  <Link to={`/student/exercises/${ex.id}/solution`}>
+                    <Btn size="sm" variant="ghost" title="Vedi soluzione">💡</Btn>
+                  </Link>
                 </div>
               </Card>
             )
