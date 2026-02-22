@@ -61,6 +61,7 @@ export default function AdminExercises() {
                   <Btn size="sm" variant="ghost" onClick={() => togglePublish(ex)}>
                     {ex.is_published ? '🔒 Nascondi' : '🌐 Pubblica'}
                   </Btn>
+                  <Link to={`/admin/exercises/${ex.id}/solution`}><Btn size="sm" variant="ghost">💡 Soluzione</Btn></Link>
                   <Link to={`/admin/exercises/${ex.id}/edit`}><Btn size="sm" variant="ghost">✏️ Modifica</Btn></Link>
                   <Btn size="sm" variant="danger" onClick={() => deleteExercise(ex.id)}>🗑</Btn>
                 </div>
