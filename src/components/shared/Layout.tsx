@@ -17,10 +17,13 @@ export default function Layout() {
         { to: '/admin/exercises', label: '📝 Esercizi' },
         { to: '/admin/submissions', label: '📤 Invii' },
         { to: '/admin/users', label: '👥 Utenti' },
+        { to: '/admin/announcements', label: '📢 Bacheca' },
+        { to: '/admin/chat', label: '💬 Chat' },
       ]
     : [
         { to: '/student', label: '🏠 Home', end: true },
         { to: '/student/grades', label: '⭐ I miei voti' },
+        { to: '/student/announcements', label: '📢 Bacheca' },
       ]
 
   const profilePath = isAdmin ? '/admin/profile' : '/student/profile'
@@ -33,9 +36,10 @@ export default function Layout() {
         borderBottom: '1px solid var(--border)',
         background: 'rgba(10,14,23,0.97)',
         position: 'sticky', top: 0, zIndex: 50,
-        backdropFilter: 'blur(12px)'
+        backdropFilter: 'blur(12px)',
+        flexWrap: 'wrap', gap: '0.5rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.1rem' }}>
             <div style={{
               width: 30, height: 30,
@@ -45,16 +49,16 @@ export default function Layout() {
             }}>STA</div>
             Web STA
           </div>
-          <div style={{ display: 'flex', gap: '0.25rem' }}>
+          <div style={{ display: 'flex', gap: '0.2rem', flexWrap: 'wrap' }}>
             {navLinks.map(link => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 end={link.end}
                 style={({ isActive }) => ({
-                  padding: '0.35rem 0.85rem',
+                  padding: '0.35rem 0.75rem',
                   borderRadius: 7,
-                  fontSize: '0.82rem',
+                  fontSize: '0.8rem',
                   fontWeight: 600,
                   textDecoration: 'none',
                   transition: 'all 0.15s',
@@ -66,7 +70,6 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* Right side: profile + sign out */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{
             padding: '0.25rem 0.7rem', borderRadius: 20,
@@ -78,7 +81,6 @@ export default function Layout() {
             {isAdmin ? '👤 ADMIN' : '🎓 STUDENT'}
           </span>
 
-          {/* Profile button */}
           <NavLink
             to={profilePath}
             style={({ isActive }) => ({
@@ -86,9 +88,7 @@ export default function Layout() {
               padding: '0.35rem 0.75rem', borderRadius: 8,
               fontSize: '0.82rem', fontWeight: 600, textDecoration: 'none',
               background: isActive ? 'var(--surface2)' : 'transparent',
-              color: 'var(--text-dim)',
-              border: '1px solid transparent',
-              transition: 'all 0.15s',
+              color: 'var(--text-dim)', border: '1px solid transparent', transition: 'all 0.15s',
             })}
           >
             <span style={{
