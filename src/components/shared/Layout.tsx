@@ -16,11 +16,14 @@ export default function Layout() {
         { to: '/admin', label: '📊 Dashboard', end: true },
         { to: '/admin/exercises', label: '📝 Esercizi' },
         { to: '/admin/submissions', label: '📤 Invii' },
+        { to: '/admin/users', label: '👥 Utenti' },
       ]
     : [
         { to: '/student', label: '🏠 Home', end: true },
         { to: '/student/grades', label: '⭐ I miei voti' },
       ]
+
+  const profilePath = isAdmin ? '/admin/profile' : '/student/profile'
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -39,8 +42,8 @@ export default function Layout() {
               background: 'linear-gradient(135deg, #7c52ff, #f97316)',
               borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: 'JetBrains Mono, monospace', fontSize: '0.85rem', color: 'white', fontWeight: 700
-            }}>STA</div>
-            Web STA
+            }}>K</div>
+            KotlinEval
           </div>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
             {navLinks.map(link => (
@@ -62,7 +65,9 @@ export default function Layout() {
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+
+        {/* Right side: profile + sign out */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{
             padding: '0.25rem 0.7rem', borderRadius: 20,
             fontSize: '0.7rem', fontFamily: 'JetBrains Mono, monospace', fontWeight: 700,
@@ -72,7 +77,32 @@ export default function Layout() {
           }}>
             {isAdmin ? '👤 ADMIN' : '🎓 STUDENT'}
           </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{profile?.full_name}</span>
+
+          {/* Profile button */}
+          <NavLink
+            to={profilePath}
+            style={({ isActive }) => ({
+              display: 'flex', alignItems: 'center', gap: '0.4rem',
+              padding: '0.35rem 0.75rem', borderRadius: 8,
+              fontSize: '0.82rem', fontWeight: 600, textDecoration: 'none',
+              background: isActive ? 'var(--surface2)' : 'transparent',
+              color: 'var(--text-dim)',
+              border: '1px solid transparent',
+              transition: 'all 0.15s',
+            })}
+          >
+            <span style={{
+              width: 22, height: 22, borderRadius: '50%',
+              background: isAdmin ? 'rgba(249,115,22,0.2)' : 'rgba(124,106,247,0.2)',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.7rem', fontWeight: 800,
+              color: isAdmin ? 'var(--accent2)' : 'var(--accent)'
+            }}>
+              {profile?.full_name?.charAt(0).toUpperCase() ?? '?'}
+            </span>
+            {profile?.full_name?.split(' ')[0]}
+          </NavLink>
+
           <button onClick={handleSignOut} style={{
             padding: '0.35rem 0.8rem', borderRadius: 7, border: '1px solid var(--border)',
             background: 'var(--surface2)', color: 'var(--text-dim)', fontSize: '0.78rem',
