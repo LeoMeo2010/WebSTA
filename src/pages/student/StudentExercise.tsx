@@ -20,6 +20,7 @@ export default function StudentExercise() {
   const [grade, setGrade] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -71,6 +72,22 @@ export default function StudentExercise() {
       alert('Errore: ' + err.message)
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm('Sei sicuro di voler eliminare il tuo invio? Potrai riconsegnare in seguito.')) return
+    setDeleting(true)
+    const { error } = await supabase.from('submissions').delete().eq('id', submission.id)
+    if (error) {
+      alert('Errore: ' + error.message)
+      setDeleting(false)
+    } else {
+      setSubmission(null)
+      setGrade(null)
+      setMainCode('fun main() {\n    // scrivi qui il codice\n}\n')
+      setTestCode('import org.junit.jupiter.api.Assertions.*\nimport org.junit.jupiter.api.*\n\nclass MainTest {\n    @Test\n    fun testExample() {\n        // scrivi i tuoi test\n    }\n}\n')
+      setDeleting(false)
     }
   }
 
@@ -128,6 +145,11 @@ export default function StudentExercise() {
 
           {!isGraded && (
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
+              {submission && (
+                <Btn variant="danger" onClick={handleDelete} disabled={deleting}>
+                  {deleting ? 'Eliminazione...' : '🗑️ Elimina invio'}
+                </Btn>
+              )}
               <Btn variant="ghost" onClick={() => navigate('/student')}>Annulla</Btn>
               <Btn onClick={handleSubmit} disabled={submitting}>
                 {submitting ? 'Invio...' : submission ? '🔄 Aggiorna invio' : '📤 Invia codice'}

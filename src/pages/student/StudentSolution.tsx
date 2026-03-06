@@ -12,12 +12,13 @@ export default function StudentSolution() {
   const [exercise, setExercise] = useState<any>(null)
   const [hasSubmission, setHasSubmission] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'main' | 'test'>('main')
 
   useEffect(() => {
     if (!user) return
     async function load() {
       const [{ data: ex }, { data: sub }] = await Promise.all([
-        supabase.from('exercises').select('id, title, solution_code, solution_published').eq('id', id!).single(),
+        supabase.from('exercises').select('id, title, solution_main_code, solution_test_code, solution_published').eq('id', id!).single(),
         supabase.from('submissions').select('id').eq('exercise_id', id!).eq('student_id', user!.id).maybeSingle(),
       ])
       setExercise(ex)
@@ -44,6 +45,17 @@ export default function StudentSolution() {
     )
   }
 
+  const tabStyle = (active: boolean): React.CSSProperties => ({
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+    fontFamily: 'JetBrains Mono',
+    fontSize: '0.82rem',
+    background: 'none',
+    border: 'none',
+    borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+    color: active ? 'var(--accent)' : 'var(--text-muted)',
+  })
+
   return (
     <div>
       <button onClick={() => navigate('/student')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
@@ -62,17 +74,25 @@ export default function StudentSolution() {
       )}
 
       <Card style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '0.6rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.82rem', color: 'var(--green)' }}>📄 Solution.kt</span>
-          <span style={{ marginLeft: 'auto', fontSize: '0.68rem', color: 'var(--text-muted)' }}>sola lettura</span>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
+          <button style={tabStyle(activeTab === 'main')} onClick={() => setActiveTab('main')}>
+            📄 Main.kt
+          </button>
+          <button style={tabStyle(activeTab === 'test')} onClick={() => setActiveTab('test')}>
+            🧪 Test.kt
+          </button>
         </div>
-        <Editor
-          height="500px"
-          language="kotlin"
-          theme="vs-dark"
-          value={exercise.solution_code ?? ''}
-          options={{ readOnly: true, fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false, wordWrap: 'on' }}
-        />
+
+        <div style={{ display: activeTab === 'main' ? 'block' : 'none' }}>
+          <Editor height="500px" language="kotlin" theme="vs-dark"
+            value={exercise.solution_main_code ?? ''}
+            options={{ readOnly: true, fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false }} />
+        </div>
+        <div style={{ display: activeTab === 'test' ? 'block' : 'none' }}>
+          <Editor height="500px" language="kotlin" theme="vs-dark"
+            value={exercise.solution_test_code ?? ''}
+            options={{ readOnly: true, fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false }} />
+        </div>
       </Card>
     </div>
   )

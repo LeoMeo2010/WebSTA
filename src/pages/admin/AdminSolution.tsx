@@ -9,7 +9,9 @@ export default function AdminSolution() {
   const navigate = useNavigate()
 
   const [exercise, setExercise] = useState<any>(null)
-  const [solutionCode, setSolutionCode] = useState('')
+  const [mainCode, setMainCode] = useState('')
+  const [testCode, setTestCode] = useState('')
+  const [activeTab, setActiveTab] = useState<'main' | 'test'>('main')
   const [published, setPublished] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -18,13 +20,14 @@ export default function AdminSolution() {
   useEffect(() => {
     supabase
       .from('exercises')
-      .select('id, title, solution_code, solution_published')
+      .select('id, title, solution_main_code, solution_test_code, solution_published')
       .eq('id', id!)
       .single()
       .then(({ data }) => {
         if (!data) return
         setExercise(data)
-        setSolutionCode(data.solution_code ?? '// Scrivi qui la soluzione\nfun main() {\n\n}\n')
+        setMainCode(data.solution_main_code ?? '// Main\nfun main() {\n\n}\n')
+        setTestCode(data.solution_test_code ?? '// Test\n')
         setPublished(data.solution_published ?? false)
         setLoading(false)
       })
@@ -37,7 +40,8 @@ export default function AdminSolution() {
     const { error } = await supabase
       .from('exercises')
       .update({
-        solution_code: solutionCode,
+        solution_main_code: mainCode,
+        solution_test_code: testCode,
         solution_published: newPublished,
       })
       .eq('id', id!)
@@ -53,6 +57,17 @@ export default function AdminSolution() {
 
   if (loading) return <Spinner />
   if (!exercise) return <div style={{ color: 'var(--red)', padding: '2rem' }}>Esercizio non trovato.</div>
+
+  const tabStyle = (active: boolean) => ({
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+    fontFamily: 'JetBrains Mono',
+    fontSize: '0.82rem',
+    background: 'none',
+    border: 'none',
+    borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
+    color: active ? 'var(--accent)' : 'var(--text-muted)',
+  })
 
   return (
     <div>
@@ -74,17 +89,39 @@ export default function AdminSolution() {
       </div>
 
       <Card style={{ overflow: 'hidden', marginBottom: '1rem' }}>
-        <div style={{ padding: '0.6rem 1rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.82rem', color: 'var(--accent)' }}>📄 Solution.kt</span>
+        {/* Tab bar */}
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
+          <button style={tabStyle(activeTab === 'main')} onClick={() => setActiveTab('main')}>
+            📄 Main.kt
+          </button>
+          <button style={tabStyle(activeTab === 'test')} onClick={() => setActiveTab('test')}>
+            🧪 Test.kt
+          </button>
         </div>
-        <Editor
-          height="500px"
-          language="kotlin"
-          theme="vs-dark"
-          value={solutionCode}
-          onChange={v => setSolutionCode(v ?? '')}
-          options={{ fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false, wordWrap: 'on' }}
-        />
+
+        {/* Main editor */}
+        <div style={{ display: activeTab === 'main' ? 'block' : 'none' }}>
+          <Editor
+            height="500px"
+            language="kotlin"
+            theme="vs-dark"
+            value={mainCode}
+            onChange={v => setMainCode(v ?? '')}
+            options={{ fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false, wordWrap: 'on' }}
+          />
+        </div>
+
+        {/* Test editor */}
+        <div style={{ display: activeTab === 'test' ? 'block' : 'none' }}>
+          <Editor
+            height="500px"
+            language="kotlin"
+            theme="vs-dark"
+            value={testCode}
+            onChange={v => setTestCode(v ?? '')}
+            options={{ fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false, wordWrap: 'on' }}
+          />
+        </div>
       </Card>
 
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
